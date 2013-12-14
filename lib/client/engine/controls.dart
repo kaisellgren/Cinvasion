@@ -3,11 +3,13 @@ part of cinvasion.client;
 class Controls {
   Game game;
 
-  int mouseX;
-  int mouseY;
+  int mouseX = 0;
+  int mouseY = 0;
 
-  int get cellX => (mouseX / game.blockSize).floor();
-  int get cellY => (mouseY / game.blockSize).floor();
+  int get mouseCellX => (mouseX / game.blockSize).floor();
+  int get mouseCellY => (mouseY / game.blockSize).floor();
+
+  Point get mouseCell => new Point(mouseCellX, mouseCellY);
 
   Controls(this.game) {
     game.canvas.onMouseMove.listen((MouseEvent e) {

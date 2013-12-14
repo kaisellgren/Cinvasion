@@ -11,6 +11,8 @@ class Renderer {
   }
 
   void draw(num highResTime) {
+    context.clearRect(0, 0, game.canvas.width, game.canvas.height);
+
     drawGrid();
 
     if (game.canPlay) drawControls();
@@ -19,7 +21,9 @@ class Renderer {
   }
 
   void drawControls() {
-
+    // Draw the highlighted block.
+    context.fillStyle = '${game.currentPlayer.color}';
+    context.fillRect(game.controls.mouseCellX * game.blockSize, game.controls.mouseCellY * game.blockSize, game.blockSize, game.blockSize);
   }
 
   void drawGrid() {

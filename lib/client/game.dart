@@ -50,4 +50,6 @@ class Game {
   bool isPlayerMe(Player p) {
     return true; // Let us play all turns for now, for every player.
   }
+
+  Player get currentPlayer => players[currentTurn];
 }
