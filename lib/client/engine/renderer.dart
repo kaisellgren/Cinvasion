@@ -23,10 +23,12 @@ class Renderer {
 
   void drawControls() {
     // Draw the highlighted block.
+    context.save();
     context.fillStyle = '${game.currentPlayer.color}';
     context.globalAlpha = 0.5;
     context.fillRect(game.controls.mouseCellX * game.blockSize, game.controls.mouseCellY * game.blockSize, game.blockSize, game.blockSize);
     context.globalAlpha = 1;
+    context.restore();
   }
 
   void drawEntities() {

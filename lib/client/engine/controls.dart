@@ -15,10 +15,17 @@ class Controls {
     game.canvas.onMouseMove.listen((MouseEvent e) {
       mouseX = e.clientX - game.canvas.offsetLeft;
       mouseY = e.clientY - game.canvas.offsetTop;
+
+      e.preventDefault();
     });
 
     game.canvas.onClick.listen((MouseEvent e) {
       if (game.canPlay) game.chooseCell(mouseCell);
+
+      e.preventDefault();
     });
+
+    game.canvas.onDragStart.listen((e) => e.preventDefault());
+    game.canvas.onMouseDown.listen((e) => e.preventDefault());
   }
 }

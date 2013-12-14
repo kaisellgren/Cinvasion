@@ -67,11 +67,17 @@ class Game {
 
     if (isPlayerMe(players[currentTurn])) canPlay = true;
     else canPlay = false;
+
+    updateScores();
   }
 
   /** Returns true if the given player is the one running this local instance. */
   bool isPlayerMe(Player p) {
     return true; // Let us play all turns for now, for every player.
+  }
+
+  void updateScores() {
+
   }
 
   Player get currentPlayer => players[currentTurn];
