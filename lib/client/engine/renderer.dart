@@ -20,6 +20,7 @@ class Renderer {
     drawGrid();
     drawEntities();
     drawCapturedPoints();
+    drawAvailableCells();
 
     if (game.canPlay) drawControls();
 
@@ -61,6 +62,24 @@ class Renderer {
       context.fillStyle = '${player.color}';
       points.forEach((point) {
         context.fillRect(point.x * game.blockSize, point.y * game.blockSize, game.blockSize, game.blockSize);
+      });
+    });
+
+    context.globalAlpha = 1;
+    context.restore();
+  }
+
+  void drawAvailableCells() {
+    context.save();
+    context.globalAlpha = 0.25;
+
+    var player = game.currentPlayer;
+    game.boardLogic.getCapturedPoints(player: player).forEach((points) {
+      context.fillStyle = '${player.color}';
+      points.forEach((point) {
+        game.boardLogic.getAvailAblePoints(player, point).forEach((availPoint) {
+            //
+        });
       });
     });
 

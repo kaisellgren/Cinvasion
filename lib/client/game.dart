@@ -25,6 +25,7 @@ class Game {
   final int blockSize = 48;
   final int columns = 30;
   final int rows = 12;
+  final int maxMovement = 6;
 
   static const List<String> COLORS = const ["#5D9B00", "#00BFC2", "#C92200", "#C97C00", "#D1C300", "#0085C7", "#8361FF", "#CE1FFF"];
 

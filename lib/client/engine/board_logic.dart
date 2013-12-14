@@ -5,6 +5,8 @@ class BoardLogic {
 
   BoardLogic(this.game);
 
+  final directionsToCheck = ['right', 'bottom right', 'bottom', 'bottom left', 'left', 'top left', 'top', 'top right'];
+
   bool isCellEmpty(Point p) {
     for (final entity in game.entities) {
       if (p.x == entity.position.x && p.y == entity.position.y) {
@@ -13,10 +15,6 @@ class BoardLogic {
     }
 
     return p.x < game.columns && p.y < game.rows;
-  }
-
-  bool isCellAvailable(Point p) {
-    return isCellEmpty(p) && !getCapturedPoints().contains(p);
   }
 
  /**
@@ -50,8 +48,6 @@ class BoardLogic {
   /** Returns a [List] of [Point] objects representing every captured place. */
   List<Point> getCapturedPoints({Player player}) {
     var pieces = game.entities.where((e) => e is Piece && e.player == player);
-
-    var directionsToCheck = ['right', 'bottom right', 'bottom', 'bottom left', 'left', 'top left', 'top', 'top right'];
 
     var points = [];
     pieces.forEach((Piece piece) {
@@ -88,5 +84,35 @@ class BoardLogic {
     if (inclusive) list.add(p2);
 
     return list;
+  }
+
+  /** Returns a [List] of [Point] objects representing available blocks where the player can make his next move **/
+  List<Point> getAvailAblePoints(Player player, Point p) {
+    var availPoints = [];
+    directionsToCheck.forEach((direction) {
+      availPoints.addAll(this.getAvailablePointsPerDirection(p, direction: direction));
+    });
+    return availPoints;
+  }
+
+  List<Point> getAvailablePointsPerDirection(Point p, {direction: 'right'}) {
+// How much to increase per step.
+    var xIncrease = direction.contains('right') ? 1 : (direction.contains('left') ? -1 : 0);
+    var yIncrease = direction.contains('bottom') ? 1 : (direction.contains('top') ? -1 : 0);
+    var cells = [];
+    for(var i = 0; i < game.maxMovement; i++) {
+      var nextPoint = new Point(p.x + xIncrease * i, p.y + yIncrease * i);
+
+// We hit the nether.
+      if (nextPoint.x > game.columns) break;
+      if (nextPoint.x < 0) break;
+      if (nextPoint.y > game.rows) break;
+      if (nextPoint.y < 0) break;
+
+      if (this.isCellEmpty(nextPoint)) {
+        cells.add(nextPoint);
+      }
+    }
+    return cells;
   }
 }
