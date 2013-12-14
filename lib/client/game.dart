@@ -7,6 +7,7 @@ part 'engine/renderer.dart';
 part 'engine/player.dart';
 part 'engine/entity.dart';
 part 'engine/brick.dart';
+part 'engine/piece.dart';
 part 'engine/controls.dart';
 
 class Game {
@@ -17,10 +18,13 @@ class Game {
   // Hard-coded engine settings.
   final int blockSize = 48;
 
+  static const List<String> COLORS = const ["#5D9B00", "#00BFC2", "#C92200", "#C97C00", "#D1C300", "#0085C7", "#8361FF", "#CE1FFF"];
+
   // Match settings.
   List<Player> players = [];
 
   // Other.
+  List<Entity> entities = [];
   int currentTurn = -1;
   bool canPlay = false; // Enable player controls?
 
@@ -29,11 +33,27 @@ class Game {
     controls = new Controls(this);
 
     // Create players.
-    players.add(
+    players.addAll([
       new Player()
         ..name = 'raper'
-        ..color = '#5D9B00'
-        ..turnIndex = 0
+        ..color = COLORS[new Random().nextInt(COLORS.length)]
+        ..turnIndex = 0,
+
+      new Player()
+        ..name = 'raper 2'
+        ..color = COLORS[new Random().nextInt(COLORS.length)]
+        ..turnIndex = 1
+    ]);
+
+    nextTurn();
+  }
+
+  /** Chooses the given cell. */
+  void chooseCell(Point cell) {
+    entities.add(
+      new Piece()
+        ..player = currentPlayer
+        ..position = cell
     );
 
     nextTurn();
@@ -43,7 +63,7 @@ class Game {
   void nextTurn() {
     currentTurn++;
 
-    if (currentTurn > players.length) currentTurn = 0;
+    if (currentTurn >= players.length) currentTurn = 0;
 
     if (isPlayerMe(players[currentTurn])) canPlay = true;
     else canPlay = false;

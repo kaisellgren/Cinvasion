@@ -16,5 +16,9 @@ class Controls {
       mouseX = e.clientX - game.canvas.offsetLeft;
       mouseY = e.clientY - game.canvas.offsetTop;
     });
+
+    game.canvas.onClick.listen((MouseEvent e) {
+      if (game.canPlay) game.chooseCell(mouseCell);
+    });
   }
 }
