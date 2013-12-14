@@ -70,11 +70,9 @@ class Game {
           ..player = currentPlayer
           ..position = cell
       );
-    } else {
-      window.alert('This block is already full!');
-    }
 
-    nextTurn();
+      nextTurn();
+    }
   }
 
   /** Process next turn. */

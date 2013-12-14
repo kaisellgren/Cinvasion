@@ -24,12 +24,17 @@ class Renderer {
 
   void drawControls() {
     // Draw the highlighted block.
-    context.save();
-    context.fillStyle = '${game.currentPlayer.color}';
-    context.globalAlpha = 0.5;
-    context.fillRect(game.controls.mouseCellX * game.blockSize, game.controls.mouseCellY * game.blockSize, game.blockSize, game.blockSize);
-    context.globalAlpha = 1;
-    context.restore();
+    if (game.boardLogic.isCellEmpty(game.controls.mouseCell)) {
+      context.save();
+      context.fillStyle = '${game.currentPlayer.color}';
+      context.globalAlpha = 0.5;
+      context.fillRect(game.controls.mouseCellX * game.blockSize, game.controls.mouseCellY * game.blockSize, game.blockSize, game.blockSize);
+      context.globalAlpha = 1;
+      context.restore();
+      game.canvas.style.cursor = 'copy';
+    } else { // TODO: Move these empty checks to controls or game or somewhere else.
+      game.canvas.style.cursor = 'not-allowed';
+    }
   }
 
   void drawEntities() {
@@ -46,7 +51,7 @@ class Renderer {
 
   void drawCapturedPoints() {
     context.save();
-    context.globalAlpha = 0.25;
+    context.globalAlpha = 0.05;
 
     game.capturedPointsByPlayer.forEach((Player player, List<Point> points) {
       context.fillStyle = '${player.color}';

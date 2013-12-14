@@ -48,7 +48,7 @@ class BoardLogic {
 
   /** Returns a [List] of [Point] objects representing every captured place. */
   List<Point> getCapturedPoints({Player player}) {
-    var pieces = game.entities.where((e) => e is Piece && (player == null || e.player == player));
+    var pieces = game.entities.where((e) => e is Piece && e.player == player);
 
     var directionsToCheck = ['right', 'bottom right', 'bottom', 'bottom left', 'left', 'top left', 'top', 'top right'];
 
@@ -56,7 +56,7 @@ class BoardLogic {
     pieces.forEach((Piece piece) {
       directionsToCheck.forEach((direction) {
         var hit = findNextEntity(piece.position, direction: direction);
-        if (hit != null) points.addAll(createPointsFromRange(piece.position, hit.position, inclusive: false));
+        if (hit is Piece && hit.player == player) points.addAll(createPointsFromRange(piece.position, hit.position, inclusive: false));
       });
     });
 
@@ -74,7 +74,7 @@ class BoardLogic {
 
     if (horizontalSize != 0 && verticalSize != 0 && horizontalSize != verticalSize) throw 'Cannot create point range from unbalanced points.';
 
-    for (var i = 1; i < horizontalSize; i++) {
+    for (var i = 1; i < max(horizontalSize, verticalSize); i++) {
       var x = p1.x + i * (p2.x > p1.x ? 1 : -1);
       var y = p1.y + i * (p2.y > p1.y ? 1 : -1);
 
