@@ -1,4 +1,4 @@
-name: Cinvasion
+name: cinvasion
 dependencies:
   browser: any
   polymer: any
