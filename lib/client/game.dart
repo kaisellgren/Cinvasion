@@ -9,14 +9,19 @@ part 'engine/entity.dart';
 part 'engine/brick.dart';
 part 'engine/piece.dart';
 part 'engine/controls.dart';
+part 'engine/world_generator.dart';
 
 class Game {
   CanvasElement canvas;
   Renderer renderer;
   Controls controls;
+  WorldGenerator worldGenerator;
+  Random random;
 
   // Hard-coded engine settings.
   final int blockSize = 48;
+  final int columns = 30;
+  final int rows = 12;
 
   static const List<String> COLORS = const ["#5D9B00", "#00BFC2", "#C92200", "#C97C00", "#D1C300", "#0085C7", "#8361FF", "#CE1FFF"];
 
@@ -29,19 +34,23 @@ class Game {
   bool canPlay = false; // Enable player controls?
 
   Game({this.canvas}) {
+    random = new Random();
     renderer = new Renderer(this);
     controls = new Controls(this);
+    worldGenerator = new WorldGenerator(this);
+
+    worldGenerator.generate();
 
     // Create players.
     players.addAll([
       new Player()
         ..name = 'raper'
-        ..color = COLORS[new Random().nextInt(COLORS.length)]
+        ..color = COLORS[random.nextInt(COLORS.length)]
         ..turnIndex = 0,
 
       new Player()
         ..name = 'raper 2'
-        ..color = COLORS[new Random().nextInt(COLORS.length)]
+        ..color = COLORS[random.nextInt(COLORS.length)]
         ..turnIndex = 1
     ]);
 

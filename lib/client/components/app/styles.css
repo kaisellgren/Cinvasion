@@ -4,9 +4,12 @@
 }
 
 .toolbar {
-  background: #4E4E4E;
+  background: #F1F1F1;
   height: 64px;
   width: 100%;
+  border-bottom: 1px solid #aaa;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1;
 }
 
 .container {
