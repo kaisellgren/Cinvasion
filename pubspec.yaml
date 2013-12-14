@@ -1,0 +1,5 @@
+name: Cinvasion
+dependencies:
+  browser: any
+  polymer: any
+  http_server: any
