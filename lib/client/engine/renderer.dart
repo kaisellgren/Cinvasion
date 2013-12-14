@@ -37,6 +37,10 @@ class Renderer {
         context.fillStyle = '${entity.player.color}';
         context.fillRect(entity.position.x * game.blockSize, entity.position.y * game.blockSize, game.blockSize, game.blockSize);
       }
+      else if(entity is Brick) {
+        context.fillStyle = '${entity.color}';
+        context.fillRect(entity.position.x * game.blockSize, entity.position.y * game.blockSize, game.blockSize, game.blockSize);
+      }
     });
   }
 
