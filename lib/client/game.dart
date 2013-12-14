@@ -10,6 +10,7 @@ part 'engine/brick.dart';
 part 'engine/piece.dart';
 part 'engine/controls.dart';
 part 'engine/world_generator.dart';
+part 'engine/board_logic.dart';
 
 class Game {
   CanvasElement canvas;
@@ -17,6 +18,7 @@ class Game {
   Controls controls;
   WorldGenerator worldGenerator;
   Random random;
+  BoardLogic boardLogic;
 
   // Hard-coded engine settings.
   final int blockSize = 48;
@@ -37,6 +39,7 @@ class Game {
     random = new Random();
     renderer = new Renderer(this);
     controls = new Controls(this);
+    boardLogic = new BoardLogic(this);
     worldGenerator = new WorldGenerator(this);
 
     worldGenerator.generate();
@@ -59,11 +62,13 @@ class Game {
 
   /** Chooses the given cell. */
   void chooseCell(Point cell) {
-    entities.add(
-      new Piece()
-        ..player = currentPlayer
-        ..position = cell
-    );
+    if(boardLogic.emptyBlock(cell)) {
+      entities.add(
+          new Piece()
+            ..player = currentPlayer
+            ..position = cell
+      );
+    }
 
     nextTurn();
   }
