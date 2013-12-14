@@ -62,12 +62,14 @@ class Game {
 
   /** Chooses the given cell. */
   void chooseCell(Point cell) {
-    if(boardLogic.emptyBlock(cell)) {
+    if (boardLogic.isEmptyCell(cell)) {
       entities.add(
           new Piece()
             ..player = currentPlayer
             ..position = cell
       );
+    } else {
+      window.alert('This block is already full!');
     }
 
     nextTurn();
