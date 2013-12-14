@@ -11,7 +11,8 @@ class BoardLogic {
         return false;
       }
     }
-    return true;
+
+    return p.x < game.columns && p.y < game.rows;
   }
 
   bool isCellAvailable(Point p) {

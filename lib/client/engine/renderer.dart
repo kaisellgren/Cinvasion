@@ -11,7 +11,11 @@ class Renderer {
   }
 
   void draw(num highResTime) {
-    context.clearRect(0, 0, game.canvas.width, game.canvas.height);
+    context.fillStyle = '#444';
+    context.fillRect(0, 0, game.canvas.width, game.canvas.height);
+
+    context.fillStyle = '#f0f0f0';
+    context.fillRect(0, 0, game.columns * game.blockSize, game.rows * game.blockSize);
 
     drawGrid();
     drawEntities();
@@ -65,11 +69,11 @@ class Renderer {
   }
 
   void drawGrid() {
-    context.strokeStyle = '#f9f9f9';
+    context.strokeStyle = '#ddd';
 
-    for (var x = 0; x <= game.canvas.width; x += game.blockSize) {
-      for (var y = 0; y <= game.canvas.height; y += game.blockSize) {
-        context.strokeRect(x, y, game.blockSize, game.blockSize);
+    for (var x = 0; x < game.columns; x++) {
+      for (var y = 0; y < game.rows; y++) {
+        context.strokeRect(x * game.blockSize, y * game.blockSize, game.blockSize, game.blockSize);
       }
     }
   }

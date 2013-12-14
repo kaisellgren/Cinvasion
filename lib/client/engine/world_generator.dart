@@ -25,7 +25,7 @@ class WorldGenerator {
 
     // Walk around.
     for (var i = 0; i < length; i++) {
-      game.entities.add(new Brick(position: new Point(x, y)));
+      if (x < game.columns && y < game.rows && x > 0 && y > 0) game.entities.add(new Brick(position: new Point(x, y)));
 
       if (direction == 0 || direction == 7 || direction == 1) x += 1;
       if (direction == 3 || direction == 4 || direction == 5) x -= 1;
