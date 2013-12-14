@@ -64,7 +64,7 @@ class Game {
 
   /** Chooses the given cell. */
   void chooseCell(Point cell) {
-    if (boardLogic.isEmptyCell(cell)) {
+    if (boardLogic.isCellEmpty(cell)) {
       entities.add(
         new Piece()
           ..player = currentPlayer

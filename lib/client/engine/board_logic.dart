@@ -5,7 +5,7 @@ class BoardLogic {
 
   BoardLogic(this.game);
 
-  bool isEmptyCell(Point p) {
+  bool isCellEmpty(Point p) {
     for (final entity in game.entities) {
       if (p.x == entity.position.x && p.y == entity.position.y) {
         return false;
@@ -15,7 +15,7 @@ class BoardLogic {
   }
 
   bool isCellAvailable(Point p) {
-    return true;
+    return isCellEmpty(p) && !getCapturedPoints().contains(p);
   }
 
  /**
