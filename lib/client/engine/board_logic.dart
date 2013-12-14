@@ -18,47 +18,46 @@ class BoardLogic {
     return true;
   }
 
+ /**
+  * Finds the next [Entity] starting from [Point] [p] towards [direction].
+  *
+  * Direction can be one of: right, left, top, down, top right, bottom right, etc.
+  */
+  Entity findNextEntity(Point p, {direction: 'right'}) {
+    // How much to increase per step.
+    var xIncrease = direction.contains('right') ? 1 : (direction.contains('left') ? -1 : 0);
+    var yIncrease = direction.contains('bottom') ? 1 : (direction.contains('top') ? -1 : 0);
+
+    var i = 0;
+
+    while (true) {
+      i++;
+
+      var nextPoint = new Point(p.x + xIncrease * i, p.y + yIncrease * i);
+
+      // We hit the nether.
+      if (nextPoint.x > game.columns) break;
+      if (nextPoint.x < 0) break;
+      if (nextPoint.y > game.rows) break;
+      if (nextPoint.y < 0) break;
+
+      var entity = game.entities.firstWhere((e) => e.position == nextPoint, orElse: () => null);
+      if (entity != null) return entity;
+    }
+  }
+
   /** Returns a [List] of [Point] objects representing every captured place. */
-  List<Point> getCapturedPoints(Player player) {
-    var pieces = game.entities.where((e) => e is Piece && e.player == player);
+  List<Point> getCapturedPoints({Player player}) {
+    var pieces = game.entities.where((e) => e is Piece && (player == null || e.player == player));
+
+    var directionsToCheck = ['right', 'bottom right', 'bottom', 'bottom left', 'left', 'top left', 'top', 'top right'];
 
     var points = [];
     pieces.forEach((Piece piece) {
-      // Find hits from the right.
-      for (var i = piece.position.x; i < game.columns; i++) {
-        var hit = pieces.firstWhere((p) => p.position == new Point(piece.position.x + i, piece.position.y), orElse: () => null);
-        if (hit != null) {
-          points.addAll(createPointsFromRange(piece.position, hit.position, inclusive: false));
-          break;
-        }
-      }
-
-      // Find hits from the left.
-      for (var i = piece.position.x; i > 0; i--) {
-        var hit = pieces.firstWhere((p) => p.position == new Point(piece.position.x - i, piece.position.y), orElse: () => null);
-        if (hit != null) {
-          points.addAll(createPointsFromRange(piece.position, hit.position, inclusive: false));
-          break;
-        }
-      }
-
-      // Find hits from the top.
-      for (var i = piece.position.y; i > 0; i--) {
-        var hit = pieces.firstWhere((p) => p.position == new Point(piece.position.x, piece.position.y - i), orElse: () => null);
-        if (hit != null) {
-          points.addAll(createPointsFromRange(piece.position, hit.position, inclusive: false));
-          break;
-        }
-      }
-
-      // Find hits from the bottom
-      for (var i = piece.position.y; i < game.rows; i++) {
-        var hit = pieces.firstWhere((p) => p.position == new Point(piece.position.x, piece.position.y + i), orElse: () => null);
-        if (hit != null) {
-          points.addAll(createPointsFromRange(piece.position, hit.position, inclusive: false));
-          break;
-        }
-      }
+      directionsToCheck.forEach((direction) {
+        var hit = findNextEntity(piece.position, direction: direction);
+        if (hit != null) points.addAll(createPointsFromRange(piece.position, hit.position, inclusive: false));
+      });
     });
 
     return points;

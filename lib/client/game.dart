@@ -99,7 +99,7 @@ class Game {
 
   void updateCapturedPoints() {
     players.forEach((player) {
-      capturedPointsByPlayer[player] = boardLogic.getCapturedPoints(player);
+      capturedPointsByPlayer[player] = boardLogic.getCapturedPoints(player: player);
     });
   }
 
