@@ -2,6 +2,7 @@ library cinvasion.client;
 
 import 'dart:html';
 import 'dart:math';
+import 'dart:collection';
 
 part 'engine/renderer.dart';
 part 'engine/player.dart';
@@ -34,6 +35,7 @@ class Game {
   List<Entity> entities = [];
   int currentTurn = -1;
   bool canPlay = false; // Enable player controls?
+  Map<Player, List<Point>> capturedPointsByPlayer = new LinkedHashMap();
 
   Game({this.canvas}) {
     random = new Random();
@@ -62,11 +64,11 @@ class Game {
 
   /** Chooses the given cell. */
   void chooseCell(Point cell) {
-    if(boardLogic.emptyBlock(cell)) {
+    if (boardLogic.emptyBlock(cell)) {
       entities.add(
-          new Piece()
-            ..player = currentPlayer
-            ..position = cell
+        new Piece()
+          ..player = currentPlayer
+          ..position = cell
       );
     }
 
@@ -79,19 +81,24 @@ class Game {
 
     if (currentTurn >= players.length) currentTurn = 0;
 
-    if (isPlayerMe(players[currentTurn])) canPlay = true;
-    else canPlay = false;
+    canPlay = isPlayerMe(players[currentTurn]);
 
+    updateCapturedPoints();
     updateScores();
   }
 
   /** Returns true if the given player is the one running this local instance. */
-  bool isPlayerMe(Player p) {
+  bool isPlayerMe(Player player) {
     return true; // Let us play all turns for now, for every player.
   }
 
   void updateScores() {
+  }
 
+  void updateCapturedPoints() {
+    players.forEach((player) {
+      capturedPointsByPlayer[player] = boardLogic.getCapturedPoints(player);
+    });
   }
 
   Player get currentPlayer => players[currentTurn];

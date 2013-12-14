@@ -15,6 +15,7 @@ class Renderer {
 
     drawGrid();
     drawEntities();
+    drawCapturedPoints();
 
     if (game.canPlay) drawControls();
 
@@ -35,13 +36,27 @@ class Renderer {
     game.entities.forEach((Entity entity) {
       if (entity is Piece) {
         context.fillStyle = '${entity.player.color}';
-        context.fillRect(entity.position.x * game.blockSize, entity.position.y * game.blockSize, game.blockSize, game.blockSize);
-      }
-      else if(entity is Brick) {
+      } else if(entity is Brick) {
         context.fillStyle = '${entity.color}';
-        context.fillRect(entity.position.x * game.blockSize, entity.position.y * game.blockSize, game.blockSize, game.blockSize);
       }
+
+      context.fillRect(entity.position.x * game.blockSize, entity.position.y * game.blockSize, game.blockSize, game.blockSize);
     });
+  }
+
+  void drawCapturedPoints() {
+    context.save();
+    context.globalAlpha = 0.25;
+
+    game.capturedPointsByPlayer.forEach((Player player, List<Point> points) {
+      context.fillStyle = '${player.color}';
+      points.forEach((point) {
+        context.fillRect(point.x * game.blockSize, point.y * game.blockSize, game.blockSize, game.blockSize);
+      });
+    });
+
+    context.globalAlpha = 1;
+    context.restore();
   }
 
   void drawGrid() {
