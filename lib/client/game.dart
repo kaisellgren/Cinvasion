@@ -5,6 +5,8 @@ import 'dart:math';
 
 part 'engine/renderer.dart';
 part 'engine/player.dart';
+part 'engine/entity.dart';
+part 'engine/brick.dart';
 part 'engine/controls.dart';
 
 class Game {
@@ -29,7 +31,8 @@ class Game {
     // Create players.
     players.add(
       new Player()
-        ..color = 'green'
+        ..name = 'raper'
+        ..color = '#5D9B00'
         ..turnIndex = 0
     );
 
