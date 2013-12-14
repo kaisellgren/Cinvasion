@@ -1,0 +1,4 @@
+name: Cinvasion
+dependances:
+  browser: any
+  polymer: any
