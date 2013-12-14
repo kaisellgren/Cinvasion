@@ -9,11 +9,14 @@ part 'engine/entity.dart';
 part 'engine/brick.dart';
 part 'engine/piece.dart';
 part 'engine/controls.dart';
+part 'engine/board_logic.dart';
 
 class Game {
   CanvasElement canvas;
   Renderer renderer;
   Controls controls;
+  BoardLogic boardLogic;
+
 
   // Hard-coded engine settings.
   final int blockSize = 48;
@@ -31,6 +34,7 @@ class Game {
   Game({this.canvas}) {
     renderer = new Renderer(this);
     controls = new Controls(this);
+    boardLogic = new BoardLogic(this);
 
     // Create players.
     players.addAll([
@@ -50,11 +54,13 @@ class Game {
 
   /** Chooses the given cell. */
   void chooseCell(Point cell) {
-    entities.add(
-      new Piece()
-        ..player = currentPlayer
-        ..position = cell
-    );
+    if(boardLogic.emptyBlock(cell)) {
+      entities.add(
+          new Piece()
+            ..player = currentPlayer
+            ..position = cell
+      );
+    }
 
     nextTurn();
   }
