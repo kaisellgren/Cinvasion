@@ -2,15 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5c2317fe-7a0e-4232-9892-b84df7bdf87f" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/client/components/app/app.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/test/cinvasion_test.dart" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/web/index.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/web/styles/layout.css" />
-      <change type="MOVED" beforePath="C:\Projects\Cinvasion\cinvasion\lib\cinvasion.dart" afterPath="$PROJECT_DIR$/lib/client/components/app/app.dart" />
-      <change type="MOVED" beforePath="C:\Projects\Cinvasion\cinvasion\pubspec.yaml" afterPath="$PROJECT_DIR$/pubspec.yaml" />
-      <change type="MOVED" beforePath="C:\Projects\Cinvasion\cinvasion\test\cinvasion_test.dart" afterPath="$PROJECT_DIR$/lib/client/components/app/styles.css" />
-      <change type="MOVED" beforePath="C:\Projects\Cinvasion\cinvasion\web\index.html" afterPath="$PROJECT_DIR$/lib/server/server.dart" />
-      <change type="MOVED" beforePath="C:\Projects\Cinvasion\cinvasion\web\main.dart" afterPath="$PROJECT_DIR$/run.dart" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/client/game.dart" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/client/engine/renderer.dart" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/client/components/app/app.dart" afterPath="$PROJECT_DIR$/lib/client/components/app/app.dart" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/client/components/app/app.html" afterPath="$PROJECT_DIR$/lib/client/components/app/app.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/client/components/app/styles.css" afterPath="$PROJECT_DIR$/lib/client/components/app/styles.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Cinvasion.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -33,37 +30,46 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
+      <file leaf-file-name="game.dart" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lib/client/game.dart">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="15" column="3" selection-start="237" selection-end="237" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="374">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="app.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/client/components/app/app.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="2" column="47" selection-start="91" selection-end="91" vertical-scroll-proportion="-1.3076923" vertical-offset="0" max-vertical-offset="306">
+            <state line="8" column="34" selection-start="233" selection-end="233" vertical-scroll-proportion="-5.230769" vertical-offset="0" max-vertical-offset="340">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="styles.css" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/lib/client/components/app/styles.css">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="24" column="21" selection-start="342" selection-end="342" vertical-scroll-proportion="0.3923077" vertical-offset="0" max-vertical-offset="1040">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="layout.css" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/web/styles/layout.css">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="4" column="0" selection-start="57" selection-end="57" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="170">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="app.dart" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="app.dart" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib/client/components/app/app.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="0" selection-start="164" selection-end="164" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="204">
+            <state line="16" column="26" selection-start="374" selection-end="374" vertical-scroll-proportion="0.26153848" vertical-offset="0" max-vertical-offset="1040">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="styles.css" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lib/client/components/app/styles.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="18" column="8" selection-start="218" selection-end="218" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="510">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="renderer.dart" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lib/client/engine/renderer.dart">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="23" column="25" selection-start="514" selection-end="514" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="561">
               <folding />
             </state>
           </provider>
@@ -92,10 +98,12 @@
         <option value="$PROJECT_DIR$/run.dart" />
         <option value="$PROJECT_DIR$/lib/server/server.dart" />
         <option value="$PROJECT_DIR$/web/index.html" />
-        <option value="$PROJECT_DIR$/lib/client/components/app/app.dart" />
         <option value="$PROJECT_DIR$/web/styles/layout.css" />
+        <option value="$PROJECT_DIR$/lib/client/engine/renderer.dart" />
+        <option value="$PROJECT_DIR$/lib/client/game.dart" />
         <option value="$PROJECT_DIR$/lib/client/components/app/app.html" />
         <option value="$PROJECT_DIR$/lib/client/components/app/styles.css" />
+        <option value="$PROJECT_DIR$/lib/client/components/app/app.dart" />
       </list>
     </option>
   </component>
@@ -195,8 +203,44 @@
               <option name="myItemId" value="lib" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+          </PATH>
+          <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="server" />
+              <option name="myItemId" value="Cinvasion" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Cinvasion" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="client" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Cinvasion" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Cinvasion" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="client" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="engine" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -319,23 +363,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/client/components/app/app.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="0" selection-start="164" selection-end="164" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="204">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/web/index.html">
       <provider selected="true" editor-type-id="text-editor">
         <state line="6" column="0" selection-start="145" selection-end="145" vertical-scroll-proportion="0.10059172" vertical-offset="0" max-vertical-offset="1014">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/client/components/app/app.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="47" selection-start="91" selection-end="91" vertical-scroll-proportion="-1.3076923" vertical-offset="0" max-vertical-offset="306">
           <folding />
         </state>
       </provider>
@@ -347,9 +377,37 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/lib/client/engine/renderer.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="23" column="25" selection-start="514" selection-end="514" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="561">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/client/components/app/app.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="34" selection-start="233" selection-end="233" vertical-scroll-proportion="-5.230769" vertical-offset="0" max-vertical-offset="340">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/client/game.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="15" column="3" selection-start="237" selection-end="237" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="374">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/lib/client/components/app/styles.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="21" selection-start="342" selection-end="342" vertical-scroll-proportion="0.3923077" vertical-offset="0" max-vertical-offset="1040">
+        <state line="18" column="8" selection-start="218" selection-end="218" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="510">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/client/components/app/app.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="26" selection-start="374" selection-end="374" vertical-scroll-proportion="0.26153848" vertical-offset="0" max-vertical-offset="1040">
           <folding />
         </state>
       </provider>
