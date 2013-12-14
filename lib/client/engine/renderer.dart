@@ -13,7 +13,13 @@ class Renderer {
   void draw(num highResTime) {
     drawGrid();
 
+    if (game.canPlay) drawControls();
+
     window.requestAnimationFrame(draw);
+  }
+
+  void drawControls() {
+
   }
 
   void drawGrid() {
