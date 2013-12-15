@@ -74,12 +74,10 @@ class Renderer {
     context.globalAlpha = 0.25;
 
     var player = game.currentPlayer;
-    game.boardLogic.getCapturedPoints(player: player).forEach((points) {
-      context.fillStyle = '${player.color}';
-      points.forEach((point) {
-        game.boardLogic.getAvailAblePoints(player, point).forEach((availPoint) {
-            //
-        });
+    context.fillStyle = '${player.color}';
+    game.boardLogic.getCapturedPoints(player: player).forEach((point) {
+      game.boardLogic.getAvailAblePoints(player, point).forEach((availPoint) {
+          //
       });
     });
 
