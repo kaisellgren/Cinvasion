@@ -24,7 +24,21 @@ class Renderer {
 
     if (game.canPlay) drawControls();
 
+    drawScoreboard();
+
     window.requestAnimationFrame(draw);
+  }
+
+  void drawScoreboard() {
+    context.save();
+    context.fillStyle = '#333';
+    context.font = '24px sans-serif';
+    var i = 0;
+    game.players.forEach((p) {
+      context.fillText('${p.name}: ${p.score}', 8, 24 + 30 * i);
+      i++;
+    });
+    context.restore();
   }
 
   void drawControls() {
