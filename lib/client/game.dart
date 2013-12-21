@@ -7,6 +7,7 @@ import 'dart:async';
 
 import 'package:observe/observe.dart';
 
+part 'engine/ai.dart';
 part 'engine/renderer.dart';
 part 'engine/player.dart';
 part 'engine/entity.dart';
@@ -23,6 +24,7 @@ class Game {
   WorldGenerator worldGenerator;
   Random random;
   BoardLogic boardLogic;
+  AI ai;
 
   // Hard-coded engine settings.
   final int blockSize = 48;
@@ -54,6 +56,7 @@ class Game {
     controls = new Controls(this);
     boardLogic = new BoardLogic(this);
     worldGenerator = new WorldGenerator(this);
+    ai = new AI(this);
 
     worldGenerator.generate();
     controls.onCellOver.listen((cell) {
@@ -69,14 +72,15 @@ class Game {
     // Create players.
     players.addAll([
       new Player()
-        ..name = 'raper'
+        ..name = 'Stan or Kai'
         ..color = COLORS[random.nextInt(COLORS.length)]
         ..turnIndex = 0,
 
       new Player()
-        ..name = 'raper 2'
+        ..name = 'Computer'
         ..color = COLORS[random.nextInt(COLORS.length)]
         ..turnIndex = 1
+        ..isComputer = true
     ]);
 
     entities.add(new Piece()..player = players[0]..position = getRandomEmptyCell());
@@ -110,16 +114,16 @@ class Game {
 
     if (currentTurn >= players.length) currentTurn = 0;
 
-    canPlay = isPlayerMe(players[currentTurn]);
+    canPlay = isPlayerMe(currentPlayer);
 
     updateCache();
     updateScores();
+
+    if (currentPlayer.isComputer) ai.run();
   }
 
   /** Returns true if the given player is the one running this local instance. */
-  bool isPlayerMe(Player player) {
-    return true; // Let us play all turns for now, for every player.
-  }
+  bool isPlayerMe(Player player) => !player.isComputer;
 
   void updateScores() {
     players.forEach((player) {

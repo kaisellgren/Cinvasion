@@ -88,7 +88,7 @@ class Renderer {
 
     context.fillStyle = player.color;
     context.strokeStyle = player.color;
-    context.lineWidth = 4;
+    context.lineWidth = 2;
 
     points.forEach((Point p) {
       //context.fillRect(p.x * game.blockSize, p.y * game.blockSize, game.blockSize, game.blockSize);
