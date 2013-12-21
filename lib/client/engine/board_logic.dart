@@ -46,25 +46,49 @@ class BoardLogic {
   }
 
   /** Returns a [List] of [Point] objects representing every captured place. */
-  List<Point> getCapturedPoints({Player player}) {
+  Set<Point> getCapturedPoints({Player player}) {
+    var intersection = false;
+    var foreignCapturedLength = 0;
     var pieces = game.entities.where((e) => e is Piece && e.player == player);
+    var foreignPieces = game.entities.where((e) => e is Piece && e.player != player);
 
     var points = new Set();
     pieces.forEach((Piece piece) {
+      intersection = false;
       directionsToCheck.forEach((direction) {
         var hit = findNextEntity(piece.position, direction: direction);
-        if (hit is Piece && hit.player == player) points.addAll(createPointsFromRange(piece.position, hit.position, inclusive: false));
+        if (hit is Piece && hit.player == player) {
+          var capturedPoints = createPointsFromRange(piece.position, hit.position, inclusive: false);
+          //Check for other intersections
+          foreignPieces.forEach((Piece foreignPiece) {
+            directionsToCheck.forEach((foreignDirection) {
+              var foreignHit = findNextEntity(foreignPiece.position, direction: foreignDirection);
+              if (foreignHit is Piece && foreignHit.player == foreignPiece.player) {
+                var foreignCapturedPoints = createPointsFromRange(foreignPiece.position, foreignHit.position, inclusive: false);
+                var capturedIntersection = capturedPoints.intersection(foreignCapturedPoints);
+                if(capturedIntersection.length > 0) {
+                  intersection = true;
+                  if(foreignCapturedLength == 0 || foreignCapturedLength < capturedIntersection.length) {
+                    foreignCapturedLength = capturedIntersection.length;
+                  }
+                }
+              }
+            });
+          });
+          if(!intersection || capturedPoints.length > foreignCapturedLength ) {
+            points.addAll(capturedPoints);
+          }
+        }
       });
     });
-
     return points;
   }
 
-  /** Creates a [Point] [List] as a range from the two given points. */
-  List<Point> createPointsFromRange(Point p1, Point p2, {bool inclusive: true}) {
-    var list = [];
+  /** Creates a [Point] [Set] as a range from the two given points. */
+  Set<Point> createPointsFromRange(Point p1, Point p2, {bool inclusive: true}) {
+    var points = new Set();
 
-    if (inclusive) list.add(p1);
+    if (inclusive) points.add(p1);
 
     var horizontalSize = (p1.x - p2.x).abs();
     var verticalSize = (p1.y - p2.y).abs();
@@ -78,12 +102,12 @@ class BoardLogic {
       if (horizontalSize == 0) x = p1.x;
       if (verticalSize == 0) y = p1.y;
 
-      list.add(new Point(x, y));
+      points.add(new Point(x, y));
     }
 
-    if (inclusive) list.add(p2);
+    if (inclusive) points.add(p2);
 
-    return list;
+    return points;
   }
 
   /** Creates a [List] of [Point] objects from the given rectangle corners. */
