@@ -49,7 +49,7 @@ class BoardLogic {
   List<Point> getCapturedPoints({Player player}) {
     var pieces = game.entities.where((e) => e is Piece && e.player == player);
 
-    var points = [];
+    var points = new Set();
     pieces.forEach((Piece piece) {
       directionsToCheck.forEach((direction) {
         var hit = findNextEntity(piece.position, direction: direction);
@@ -86,24 +86,44 @@ class BoardLogic {
     return list;
   }
 
+  /** Creates a [List] of [Point] objects from the given rectangle corners. */
+  List<Point> createPointsFromRectangle(Point a, Point b) {
+    var points = [];
+
+    for (var x = a.x; x < b.x; x++) {
+      for (var y = a.y; y < b.y; y++) {
+        points.add(new Point(x, y));
+      }
+    }
+
+    return points;
+  }
+
   /** Returns a [List] of [Point] objects representing available blocks where the player can make his next move **/
-  List<Point> getAvailAblePoints(Player player, Point p) {
-    var availPoints = [];
-    directionsToCheck.forEach((direction) {
-      availPoints.addAll(this.getAvailablePointsPerDirection(p, direction: direction));
+  List<Point> getAvailablePoints({Player player}) {
+    var points = new Set();
+    var playerPoints = game.pieces.where((p) => p.player == player).map((p) => p.position);
+
+    playerPoints.forEach((Point p) {
+      // Create a rectangle of points around this.
+      var rectangle = createPointsFromRectangle(new Point(p.x - game.maxMovement, p.y - game.maxMovement), new Point(p.x + game.maxMovement, p.y + game.maxMovement));
+
+      // Add to the set, filter out non-empty cells.
+      points.addAll(rectangle.where((p) => isCellEmpty(p)));
     });
-    return availPoints;
+
+    return points;
   }
 
   List<Point> getAvailablePointsPerDirection(Point p, {direction: 'right'}) {
-// How much to increase per step.
+    // How much to increase per step.
     var xIncrease = direction.contains('right') ? 1 : (direction.contains('left') ? -1 : 0);
     var yIncrease = direction.contains('bottom') ? 1 : (direction.contains('top') ? -1 : 0);
     var cells = [];
     for(var i = 0; i < game.maxMovement; i++) {
       var nextPoint = new Point(p.x + xIncrease * i, p.y + yIncrease * i);
 
-// We hit the nether.
+      // We hit the nether.
       if (nextPoint.x > game.columns) break;
       if (nextPoint.x < 0) break;
       if (nextPoint.y > game.rows) break;

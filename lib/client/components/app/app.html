@@ -4,6 +4,13 @@
     <div class="container">
       <header class="toolbar">
         <button>Begin</button>
+        <div>{{game.players.length}}</div>
+        <template repeat="{{ player in game.players }}">
+          <div>
+            {{ player.name }}
+            {{ player.score }}
+          </div>
+        </template>
       </header>
 
       <div class="game-container">

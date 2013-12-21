@@ -7,6 +7,7 @@ import '../../game.dart';
 class AppElement extends PolymerElement {
   var canvas;
   var gameContainer;
+  @observable var game;
 
   AppElement.created() : super.created() {
     canvas = shadowRoot.query('canvas');
@@ -16,7 +17,7 @@ class AppElement extends PolymerElement {
 
     window.onResize.listen((_) => resizeCanvas());
 
-    new Game(canvas: canvas);
+    game = new Game(canvas: canvas);
   }
 
   void resizeCanvas() {

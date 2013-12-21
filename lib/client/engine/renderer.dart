@@ -29,16 +29,13 @@ class Renderer {
 
   void drawControls() {
     // Draw the highlighted block.
-    if (game.boardLogic.isCellEmpty(game.controls.mouseCell)) {
+    if (game.isCurrentPositionAvailable) {
       context.save();
       context.fillStyle = '${game.currentPlayer.color}';
       context.globalAlpha = 0.5;
       context.fillRect(game.controls.mouseCellX * game.blockSize, game.controls.mouseCellY * game.blockSize, game.blockSize, game.blockSize);
       context.globalAlpha = 1;
       context.restore();
-      game.canvas.style.cursor = 'copy';
-    } else { // TODO: Move these empty checks to controls or game or somewhere else.
-      game.canvas.style.cursor = 'not-allowed';
     }
   }
 
@@ -46,7 +43,7 @@ class Renderer {
     game.entities.forEach((Entity entity) {
       if (entity is Piece) {
         context.fillStyle = '${entity.player.color}';
-      } else if(entity is Brick) {
+      } else if (entity is Brick) {
         context.fillStyle = '${entity.color}';
       }
 
@@ -56,7 +53,7 @@ class Renderer {
 
   void drawCapturedPoints() {
     context.save();
-    context.globalAlpha = 0.05;
+    context.globalAlpha = 0.1;
 
     game.capturedPointsByPlayer.forEach((Player player, List<Point> points) {
       context.fillStyle = '${player.color}';
@@ -71,17 +68,50 @@ class Renderer {
 
   void drawAvailableCells() {
     context.save();
-    context.globalAlpha = 0.25;
 
     var player = game.currentPlayer;
-    context.fillStyle = '${player.color}';
-    game.boardLogic.getCapturedPoints(player: player).forEach((point) {
-      game.boardLogic.getAvailAblePoints(player, point).forEach((availPoint) {
-          //
-      });
+    var points = game.availablePointsByPlayer[player];
+
+    context.fillStyle = player.color;
+    context.strokeStyle = player.color;
+    context.lineWidth = 4;
+
+    points.forEach((Point p) {
+      //context.fillRect(p.x * game.blockSize, p.y * game.blockSize, game.blockSize, game.blockSize);
+
+      // Nothing above?
+      if (game.boardLogic.isCellEmpty(new Point(p.x, p.y - 1)) && !points.any((p2) => p2.x == p.x && p2.y == p.y - 1)) {
+        context.beginPath();
+        context.moveTo(p.x * game.blockSize, p.y * game.blockSize);
+        context.lineTo(p.x * game.blockSize + game.blockSize, p.y * game.blockSize);
+        context.stroke();
+      }
+
+      // Nothing below?
+      if (game.boardLogic.isCellEmpty(new Point(p.x, p.y + 1)) && !points.any((p2) => p2.x == p.x && p2.y == p.y + 1)) {
+        context.beginPath();
+        context.moveTo(p.x * game.blockSize, p.y * game.blockSize + game.blockSize);
+        context.lineTo(p.x * game.blockSize + game.blockSize, p.y * game.blockSize + game.blockSize);
+        context.stroke();
+      }
+
+      // Nothing on the right?
+      if (game.boardLogic.isCellEmpty(new Point(p.x + 1, p.y)) && !points.any((p2) => p2.x == p.x + 1 && p2.y == p.y)) {
+        context.beginPath();
+        context.moveTo(p.x * game.blockSize + game.blockSize, p.y * game.blockSize);
+        context.lineTo(p.x * game.blockSize + game.blockSize, p.y * game.blockSize + game.blockSize);
+        context.stroke();
+      }
+
+      // Nothing on the left?
+      if (game.boardLogic.isCellEmpty(new Point(p.x - 1, p.y)) && !points.any((p2) => p2.x == p.x - 1 && p2.y == p.y)) {
+        context.beginPath();
+        context.moveTo(p.x * game.blockSize, p.y * game.blockSize);
+        context.lineTo(p.x * game.blockSize, p.y * game.blockSize + game.blockSize);
+        context.stroke();
+      }
     });
 
-    context.globalAlpha = 1;
     context.restore();
   }
 

@@ -3,6 +3,9 @@ library cinvasion.client;
 import 'dart:html';
 import 'dart:math';
 import 'dart:collection';
+import 'dart:async';
+
+import 'package:observe/observe.dart';
 
 part 'engine/renderer.dart';
 part 'engine/player.dart';
@@ -30,13 +33,20 @@ class Game {
   static const List<String> COLORS = const ["#5D9B00", "#00BFC2", "#C92200", "#C97C00", "#D1C300", "#0085C7", "#8361FF", "#CE1FFF"];
 
   // Match settings.
-  List<Player> players = [];
+  List<Player> players = toObservable([]);
 
   // Other.
-  List<Entity> entities = [];
   int currentTurn = -1;
   bool canPlay = false; // Enable player controls?
-  Map<Player, List<Point>> capturedPointsByPlayer = new LinkedHashMap();
+
+  List<Entity> entities = [];
+  Iterable<Piece> get pieces => entities.where((e) => e is Piece);
+
+  // Pre-calculated useful information.
+  Map<Player, List<Point>> capturedPointsByPlayer = new LinkedHashMap(); // Captured areas per player. This determines the total score.
+  Map<Player, List<Point>> availablePointsByPlayer = new LinkedHashMap(); // Areas where each player can place pieces at.
+
+  bool isCurrentPositionAvailable = false;
 
   Game({this.canvas}) {
     random = new Random();
@@ -46,6 +56,15 @@ class Game {
     worldGenerator = new WorldGenerator(this);
 
     worldGenerator.generate();
+    controls.onCellOver.listen((cell) {
+      if (availablePointsByPlayer[currentPlayer].contains(cell)) {
+        canvas.style.cursor = 'copy';
+        isCurrentPositionAvailable = true;
+      } else {
+        canvas.style.cursor = 'not-allowed';
+        isCurrentPositionAvailable = false;
+      }
+    });
 
     // Create players.
     players.addAll([
@@ -60,12 +79,21 @@ class Game {
         ..turnIndex = 1
     ]);
 
+    entities.add(new Piece()..player = players[0]..position = getRandomEmptyCell());
+    entities.add(new Piece()..player = players[1]..position = getRandomEmptyCell());
+
     nextTurn();
+  }
+
+  Point getRandomEmptyCell() {
+    var p = new Point(random.nextInt(columns), random.nextInt(rows));
+    if (!boardLogic.isCellEmpty(p)) return getRandomEmptyCell();
+    return p;
   }
 
   /** Chooses the given cell. */
   void chooseCell(Point cell) {
-    if (boardLogic.isCellEmpty(cell) && cell.x < columns && cell.y < rows) {
+    if (isCurrentPositionAvailable) {
       entities.add(
         new Piece()
           ..player = currentPlayer
@@ -84,7 +112,7 @@ class Game {
 
     canPlay = isPlayerMe(players[currentTurn]);
 
-    updateCapturedPoints();
+    updateCache();
     updateScores();
   }
 
@@ -94,11 +122,15 @@ class Game {
   }
 
   void updateScores() {
+    players.forEach((player) {
+      player.score = capturedPointsByPlayer[player].length;
+    });
   }
 
-  void updateCapturedPoints() {
+  void updateCache() {
     players.forEach((player) {
       capturedPointsByPlayer[player] = boardLogic.getCapturedPoints(player: player);
+      availablePointsByPlayer[player] = boardLogic.getAvailablePoints(player: player);
     });
   }
 

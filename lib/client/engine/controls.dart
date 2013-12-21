@@ -10,13 +10,25 @@ class Controls {
   int get mouseCellY => (mouseY / game.blockSize).floor();
 
   Point get mouseCell => new Point(mouseCellX, mouseCellY);
+  Point lastMouseCell;
+
+  StreamController _onCellOverController = new StreamController.broadcast();
+  Stream get onCellOver => _onCellOverController.stream;
 
   Controls(this.game) {
     game.canvas.onMouseMove.listen((MouseEvent e) {
+      lastMouseCell = mouseCell;
+
       mouseX = e.clientX - game.canvas.offsetLeft;
       mouseY = e.clientY - game.canvas.offsetTop;
 
       e.preventDefault();
+
+      // The user moved his mouse to another cell. Fire an event.
+      // We don't want to fire if he just moves the mouse inside the same cell.
+      if (lastMouseCell != mouseCell) {
+        _onCellOverController.add(mouseCell);
+      }
     });
 
     game.canvas.onClick.listen((MouseEvent e) {
