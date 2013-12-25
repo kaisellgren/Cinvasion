@@ -18,6 +18,7 @@ class AppElement extends PolymerElement {
     window.onResize.listen((_) => resizeCanvas());
 
     game = new Game(canvas: canvas);
+    game.init();
   }
 
   void resizeCanvas() {

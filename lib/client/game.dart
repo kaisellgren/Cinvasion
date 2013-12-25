@@ -50,7 +50,10 @@ class Game {
 
   bool isCurrentPositionAvailable = false;
 
-  Game({this.canvas}) {
+  Game({this.canvas});
+
+  /** Initializes the game instance. */
+  void init() {
     random = new Random();
     renderer = new Renderer(this);
     controls = new Controls(this);
@@ -120,6 +123,14 @@ class Game {
     updateScores();
 
     if (currentPlayer.isComputer) ai.run();
+  }
+
+  void makeMove(Point p) {
+    entities.add(
+      new Piece()
+        ..player = currentPlayer
+        ..position = p
+    );
   }
 
   /** Returns true if the given player is the one running this local instance. */
