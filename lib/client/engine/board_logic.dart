@@ -51,9 +51,14 @@ class BoardLogic {
     var foreignCapturedLength = 0;
     var pieces = game.entities.where((e) => e is Piece && e.player == player);
     var foreignPieces = game.entities.where((e) => e is Piece && e.player != player);
+    Set<Point> foreignCapturedPoints = null;
+    Set<Point> capturedIntersection = null;
+    Map<Set<Point>, Set<Point>> intersectedLinesMap = new LinkedHashMap();
 
     var points = new Set();
     pieces.forEach((Piece piece) {
+      foreignCapturedPoints = null;
+      capturedIntersection = null;
       intersection = false;
       directionsToCheck.forEach((direction) {
         var hit = findNextEntity(piece.position, direction: direction);
@@ -64,12 +69,14 @@ class BoardLogic {
             directionsToCheck.forEach((foreignDirection) {
               var foreignHit = findNextEntity(foreignPiece.position, direction: foreignDirection);
               if (foreignHit is Piece && foreignHit.player == foreignPiece.player) {
-                var foreignCapturedPoints = createPointsFromRange(foreignPiece.position, foreignHit.position, inclusive: false);
-                var capturedIntersection = capturedPoints.intersection(foreignCapturedPoints);
-                if(capturedIntersection.length > 0) {
+                var foreignCapturedPointsTmp = createPointsFromRange(foreignPiece.position, foreignHit.position, inclusive: false);
+                var capturedIntersectionTmp = capturedPoints.intersection(foreignCapturedPointsTmp);
+                if(capturedIntersectionTmp.length > 0) {
                   intersection = true;
-                  if(foreignCapturedLength == 0 || foreignCapturedLength < foreignCapturedPoints.length) {
-                    foreignCapturedLength = foreignCapturedPoints.length;
+                  capturedIntersection = capturedIntersectionTmp;
+                  foreignCapturedPoints = foreignCapturedPointsTmp;
+                  if(foreignCapturedLength == 0 || foreignCapturedLength < foreignCapturedPointsTmp.length) {
+                    foreignCapturedLength = foreignCapturedPointsTmp.length;
                   }
                 }
               }
@@ -78,8 +85,20 @@ class BoardLogic {
           if(!intersection ) {
             points.addAll(capturedPoints);
           } else {
-            if(capturedPoints.length > foreignCapturedLength)
+            if(capturedPoints.length > foreignCapturedLength) {
+              window.console.log('intersection');
               points.addAll(capturedPoints);
+              intersectedLinesMap.forEach((linesKey, linesValue) {
+                if(linesKey.intersection(capturedIntersection)) {
+                  //We want to put back the original line that was broken
+                  points.addAll(linesValue);
+                }
+              });
+              intersectedLinesMap[capturedPoints] = foreignCapturedPoints;
+            } else {
+              window.console.log('foreign intersection wins');
+              intersectedLinesMap[foreignCapturedPoints] = capturedPoints;
+            }
           }
         }
       });

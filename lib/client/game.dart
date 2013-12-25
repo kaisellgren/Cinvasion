@@ -83,7 +83,7 @@ class Game {
         ..name = 'Computer'
         ..color = COLORS[random.nextInt(COLORS.length)]
         ..turnIndex = 1
-        ..isComputer = true
+        ..isComputer = false
     ]);
 
     entities.add(new Piece()..player = players[0]..position = getRandomEmptyCell());
