@@ -21,20 +21,55 @@ class Renderer {
     drawEntities();
     drawCapturedPoints();
     drawAvailableCells();
+    drawLastMoves();
 
     if (game.canPlay) drawControls();
 
     drawScoreboard();
 
+    if (game.ended) drawWinner();
+
     window.requestAnimationFrame(draw);
+  }
+
+  void drawLastMoves() {
+    context.save();
+    game.lastMoveByPlayer.forEach((Player player, Point p) {
+      context.fillStyle = 'rgba(255, 255, 255, ${game.lastTurn == player.turnIndex ? 1 : 0.4})';
+      context.beginPath();
+      context.arc(p.x * game.blockSize + game.blockSize / 2, p.y * game.blockSize + game.blockSize / 2, 8, 0, 2 * PI);
+      context.fill();
+
+      if (game.lastTurn == player.turnIndex) {
+        context.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+        context.stroke();
+      }
+
+      context.closePath();
+    });
+    context.restore();
+  }
+
+  void drawWinner() {
+    var text = '${game.winner.name} won!';
+
+    context.save();
+    context.font = '64px sans-serif';
+    context.fillStyle = 'rgba(255, 255, 255, 0.6)';
+    context.fillRect(0, 0, game.canvas.width, game.canvas.height);
+    context.fillStyle = '#333';
+    context.fillText(text, game.canvas.width / 2 - context.measureText(text).width, game.canvas.height / 2);
+    context.restore();
   }
 
   void drawScoreboard() {
     context.save();
-    context.fillStyle = '#333';
-    context.font = '24px sans-serif';
+    context.font = 'bold 24px sans-serif';
     var i = 0;
     game.players.forEach((p) {
+      context.fillStyle = 'rgba(0, 0, 0, 0.5)';
+      context.fillText('${p.name}: ${p.score}', 8 + 1, 24 + 30 * i + 1);
+      context.fillStyle = p.color;
       context.fillText('${p.name}: ${p.score}', 8, 24 + 30 * i);
       i++;
     });

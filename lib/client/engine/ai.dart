@@ -6,8 +6,6 @@ class AI {
   AI(this.game);
 
   void run() {
-    var w = new Stopwatch()..start();
-
     // Find own pieces.
     var ownPieces = game.pieces.where((p) => p.player == game.currentPlayer);
 
@@ -28,8 +26,11 @@ class AI {
 
     // Iterate through every position, make a move on an emulated game, save the score of how many areas we captured.
     Map<int, List<Point>> scores = {};
+    var highestScore;
 
-    game.boardLogic.createPointsFromRectangle(new Point(leftX, topY), new Point(rightX, bottomY)).forEach((p) {
+    var w = new Stopwatch()..start();
+
+    game.boardLogic.getAvailablePoints(player: game.currentPlayer).forEach((p) {
       var emulatedGame = createEmulatedGame();
       emulatedGame.makeMove(p);
 
@@ -39,21 +40,25 @@ class AI {
         totalScore += capturedPoints.length * (player == game.currentPlayer ? 1 : -1); // Assign negative score if the captured area was opponent's.
       });
 
+      // Set the highest score as needed.
+      if (highestScore == null || highestScore < totalScore) highestScore = totalScore;
+
+      // Too low score? Skip.
+      if (highestScore > totalScore) return;
+
       // Fill the scores map.
       if (scores.containsKey(totalScore) == false) scores[totalScore] = [];
       scores[totalScore].add(p);
     });
 
-    // TODO: Optimize by not including 0 score positions! And if no good position found, randomize or something.
+    print('after ${w.elapsedMilliseconds}');
 
     // Find the highest scored position. If several, randomize between them.
-    var highestScore = scores.keys.reduce(max);
     var position = scores[highestScore][game.random.nextInt(scores[highestScore].length)];
 
-    print('AI took: ${w.elapsedMilliseconds}ms');
+    //print('AI took: ${w.elapsedMilliseconds}ms');
 
     game.makeMove(position);
-    game.nextTurn();
   }
 
   Game createEmulatedGame() {

@@ -136,7 +136,7 @@ class BoardLogic {
       var rectangle = createPointsFromRectangle(new Point(p.x - game.maxMovement, p.y - game.maxMovement), new Point(p.x + game.maxMovement, p.y + game.maxMovement));
 
       // Add to the set, filter out non-empty cells.
-      points.addAll(rectangle.where((p) => isCellEmpty(p)));
+      points.addAll(rectangle.where((p) => isCellEmpty(p) && p.x >= 0 && p.x < game.columns && p.y >= 0 && p.y < game.rows));
     });
 
     return points;
@@ -147,7 +147,7 @@ class BoardLogic {
     var xIncrease = direction.contains('right') ? 1 : (direction.contains('left') ? -1 : 0);
     var yIncrease = direction.contains('bottom') ? 1 : (direction.contains('top') ? -1 : 0);
     var cells = [];
-    for(var i = 0; i < game.maxMovement; i++) {
+    for(var i = 0; i <= game.maxMovement; i++) {
       var nextPoint = new Point(p.x + xIncrease * i, p.y + yIncrease * i);
 
       // We hit the nether.

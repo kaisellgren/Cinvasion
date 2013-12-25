@@ -31,6 +31,7 @@ class Game {
   final int columns = 30;
   final int rows = 12;
   final int maxMovement = 6;
+  final int scoreLimit = 50;
 
   static const List<String> COLORS = const ["#5D9B00", "#00BFC2", "#C92200", "#C97C00", "#D1C300", "#0085C7", "#8361FF", "#CE1FFF"];
 
@@ -39,6 +40,7 @@ class Game {
 
   // Other.
   int currentTurn = -1;
+  int lastTurn = -1;
   bool canPlay = false; // Enable player controls?
 
   List<Entity> entities = [];
@@ -47,8 +49,11 @@ class Game {
   // Pre-calculated useful information.
   Map<Player, List<Point>> capturedPointsByPlayer = new LinkedHashMap(); // Captured areas per player. This determines the total score.
   Map<Player, List<Point>> availablePointsByPlayer = new LinkedHashMap(); // Areas where each player can place pieces at.
+  Map<Player, Point> lastMoveByPlayer = new LinkedHashMap();
 
   bool isCurrentPositionAvailable = false;
+  bool ended = false; // Has the game ended?
+  Player winner;
 
   Game({this.canvas});
 
@@ -63,7 +68,7 @@ class Game {
 
     worldGenerator.generate();
     controls.onCellOver.listen((cell) {
-      if (availablePointsByPlayer[currentPlayer].contains(cell)) {
+      if (!ended && availablePointsByPlayer[currentPlayer].contains(cell)) {
         canvas.style.cursor = 'copy';
         isCurrentPositionAvailable = true;
       } else {
@@ -73,21 +78,28 @@ class Game {
     });
 
     // Create players.
-    players.addAll([
+    var availableColors = new List.from(COLORS);
+    players.add(
       new Player()
-        ..name = 'Stan or Kai'
-        ..color = COLORS[random.nextInt(COLORS.length)]
-        ..turnIndex = 0,
+        ..name = 'Player'
+        ..color = availableColors[random.nextInt(availableColors.length)]
+        ..turnIndex = 0
+        ..isComputer = false
+    );
 
+    availableColors.removeWhere((c) => players.any((p) => p.color == c));
+
+    players.add(
       new Player()
-        ..name = 'Computer'
-        ..color = COLORS[random.nextInt(COLORS.length)]
+        ..name = 'Brutal AI'
+        ..color = availableColors[random.nextInt(availableColors.length)]
         ..turnIndex = 1
         ..isComputer = true
-    ]);
+    );
 
-    entities.add(new Piece()..player = players[0]..position = getRandomEmptyCell());
-    entities.add(new Piece()..player = players[1]..position = getRandomEmptyCell());
+    players.forEach((p) {
+      entities.add(new Piece()..player = p..position = getRandomEmptyCell());
+    });
 
     nextTurn();
   }
@@ -101,18 +113,15 @@ class Game {
   /** Chooses the given cell. */
   void chooseCell(Point cell) {
     if (isCurrentPositionAvailable) {
-      entities.add(
-        new Piece()
-          ..player = currentPlayer
-          ..position = cell
-      );
-
+      makeMove(cell);
       nextTurn();
     }
   }
 
   /** Process next turn. */
-  void nextTurn() {
+  void nextTurn({waitMs: 0}) {
+    lastTurn = currentTurn;
+
     currentTurn++;
 
     if (currentTurn >= players.length) currentTurn = 0;
@@ -122,15 +131,24 @@ class Game {
     updateCache();
     updateScores();
 
-    if (currentPlayer.isComputer) ai.run();
+    if (currentPlayer.isComputer && ended == false) {
+      new Timer(new Duration(milliseconds: waitMs), () {
+        var w = new Stopwatch()..start;
+        ai.run();
+        nextTurn(waitMs: 1500 - w.elapsedMilliseconds);
+      });
+    }
   }
 
+  /** Makes a move. */
   void makeMove(Point p) {
     entities.add(
       new Piece()
         ..player = currentPlayer
         ..position = p
     );
+
+    lastMoveByPlayer[currentPlayer] = p;
   }
 
   /** Returns true if the given player is the one running this local instance. */
@@ -139,9 +157,16 @@ class Game {
   void updateScores() {
     players.forEach((player) {
       player.score = capturedPointsByPlayer[player].length;
+
+      if (player.score >= scoreLimit) {
+        ended = true;
+        winner = player;
+        canPlay = false;
+      }
     });
   }
 
+  /** Updates all kinds of caches. Needs to be called after every turn. */
   void updateCache() {
     players.forEach((player) {
       capturedPointsByPlayer[player] = boardLogic.getCapturedPoints(player: player);
