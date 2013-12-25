@@ -68,15 +68,19 @@ class BoardLogic {
                 var capturedIntersection = capturedPoints.intersection(foreignCapturedPoints);
                 if(capturedIntersection.length > 0) {
                   intersection = true;
-                  if(foreignCapturedLength == 0 || foreignCapturedLength < capturedIntersection.length) {
-                    foreignCapturedLength = capturedIntersection.length;
+                  if(foreignCapturedLength == 0 || foreignCapturedLength < foreignCapturedPoints.length) {
+                    foreignCapturedLength = foreignCapturedPoints.length;
                   }
                 }
               }
             });
           });
-          if(!intersection || capturedPoints.length > foreignCapturedLength ) {
+          if(!intersection ) {
             points.addAll(capturedPoints);
+          }
+          else {
+            if(capturedPoints.length > foreignCapturedLength)
+              points.addAll(capturedPoints);
           }
         }
       });
