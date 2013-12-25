@@ -77,8 +77,7 @@ class BoardLogic {
           });
           if(!intersection ) {
             points.addAll(capturedPoints);
-          }
-          else {
+          } else {
             if(capturedPoints.length > foreignCapturedLength)
               points.addAll(capturedPoints);
           }
