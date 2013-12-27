@@ -7,4 +7,6 @@ part of cinvasion.client;
   bool isComputer = false;
   int score = 0;
   int aiDifficulty = 100; // 100 = best, 0 = worst
+
+  String toString() => 'Player(name: "$name")';
 }

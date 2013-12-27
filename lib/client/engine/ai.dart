@@ -35,8 +35,8 @@ class AI {
       emulatedGame.makeMove(p);
 
       var totalScore = 0;
-      emulatedGame.players.forEach((player) {
-        var capturedPoints = emulatedGame.boardLogic.getCapturedPoints(player: player);
+      var capturedPointsByPlayer = emulatedGame.boardLogic.getCapturedPointsByPlayer();
+      capturedPointsByPlayer.forEach((player, capturedPoints) {
         totalScore += capturedPoints.length * (player == game.currentPlayer ? 1 : -1); // Assign negative score if the captured area was opponent's.
       });
 
@@ -67,6 +67,7 @@ class AI {
     g.currentTurn = game.currentTurn;
     g.boardLogic = new BoardLogic(g);
     g.entities = new List.from(game.entities);
+    g.board = game.board;
     return g;
   }
 }

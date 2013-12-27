@@ -1,5 +1,23 @@
 part of cinvasion.client;
 
+class Direction {
+  final _value;
+  const Direction._internal(this._value);
+
+  static const RIGHT = const Direction._internal(0);
+  static const BOTTOM_RIGHT = const Direction._internal(1);
+  static const BOTTOM = const Direction._internal(2);
+  static const BOTTOM_LEFT = const Direction._internal(3);
+  static const LEFT = const Direction._internal(4);
+  static const TOP_LEFT = const Direction._internal(5);
+  static const TOP = const Direction._internal(6);
+  static const TOP_RIGHT = const Direction._internal(7);
+
+  static const DIRECTIONS = const [RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT, TOP_LEFT, TOP, TOP_RIGHT];
+
+  get hashCode => _value;
+}
+
 class BoardLogic {
   Game game;
 
@@ -8,7 +26,7 @@ class BoardLogic {
   final directionsToCheck = ['right', 'bottom right', 'bottom', 'bottom left', 'left', 'top left', 'top', 'top right'];
 
   bool isCellEmpty(Point p) {
-    for (final entity in game.entities) {
+    for (var entity in game.entities) {
       if (p.x == entity.position.x && p.y == entity.position.y) {
         return false;
       }
@@ -22,31 +40,34 @@ class BoardLogic {
   *
   * Direction can be one of: right, left, top, down, top right, bottom right, etc.
   */
-  Entity findNextEntity(Point p, {direction: 'right'}) {
+  Entity findNextEntity(Point p, {Direction direction}) {
     // How much to increase per step.
-    var xIncrease = direction.contains('right') ? 1 : (direction.contains('left') ? -1 : 0);
-    var yIncrease = direction.contains('bottom') ? 1 : (direction.contains('top') ? -1 : 0);
+    var xIncrease = direction == Direction.RIGHT || direction == Direction.BOTTOM_RIGHT || direction == Direction.TOP_RIGHT ? 1 : (direction != Direction.TOP && direction != Direction.BOTTOM ? -1 : 0);
+    var yIncrease = direction == Direction.BOTTOM || direction == Direction.BOTTOM_RIGHT || direction == Direction.BOTTOM_LEFT ? 1 : (direction != Direction.LEFT && direction != Direction.RIGHT ? -1 : 0);
 
     var i = 0;
+
+    if (xIncrease == 0 && yIncrease == 0) throw 'eh';
 
     while (true) {
       i++;
 
-      var nextPoint = new Point(p.x + xIncrease * i, p.y + yIncrease * i);
+      var x = p.x + xIncrease * i;
+      var y = p.y + yIncrease * i;
 
       // We hit the nether.
-      if (nextPoint.x > game.columns) break;
-      if (nextPoint.x < 0) break;
-      if (nextPoint.y > game.rows) break;
-      if (nextPoint.y < 0) break;
+      if (x >= game.columns) break;
+      if (x < 0) break;
+      if (y >= game.rows) break;
+      if (y < 0) break;
 
-      var entity = game.entities.firstWhere((e) => e.position == nextPoint, orElse: () => null);
+      var entity = game.board[x][y];
       if (entity != null) return entity;
     }
   }
 
   /** Returns a [List] of [Point] objects representing every captured place. */
-  Set<Point> getCapturedPoints({Player player}) {
+  Set<Point> getCapturedPointsOld({Player player}) {
     var intersection = false;
     var foreignCapturedLength = 0;
     var pieces = game.entities.where((e) => e is Piece && e.player == player);
@@ -86,7 +107,6 @@ class BoardLogic {
             points.addAll(capturedPoints);
           } else {
             if(capturedPoints.length > foreignCapturedLength) {
-              window.console.log('intersection');
               points.addAll(capturedPoints);
               intersectedLinesMap.forEach((linesKey, linesValue) {
                 if(linesKey.intersection(capturedIntersection)) {
@@ -96,7 +116,6 @@ class BoardLogic {
               });
               intersectedLinesMap[capturedPoints] = foreignCapturedPoints;
             } else {
-              window.console.log('foreign intersection wins');
               intersectedLinesMap[foreignCapturedPoints] = capturedPoints;
             }
           }
@@ -104,6 +123,131 @@ class BoardLogic {
       });
     });
     return points;
+  }
+
+  Map<Player, Set<Point>> getCapturedPointsByPlayer() {
+    Map<Player, List<List<Point>>> results = new LinkedHashMap(); // List of captured _lines_.
+    Map<Point, bool> pointHasIntersections = new LinkedHashMap(); // Defines which points have intersections.
+    Map<Point, int> pointLongestLine = new LinkedHashMap(); // The longest line of any point.
+    Map<Point, List<int>> pointLineLengths = new LinkedHashMap(); // List of line lengths in a point.
+    var longestLine = 0;
+
+    // We don't want two lines from the same piece pair. This is basically a tuple (Point, Point).
+    List<List<Point>> pointPairAlreadyProcessed = [];
+
+    // Create all captured lines.
+    game.players.forEach((player) {
+      results[player] = [];
+
+      game.entities.where((e) => e is Piece && e.player == player).forEach((Piece piece) {
+        Direction.DIRECTIONS.forEach((direction) {
+          var hit = findNextEntity(piece.position, direction: direction);
+          if (hit is Piece && hit.player == player) {
+            // Make sure this pair wasn't added before!
+            if (pointPairAlreadyProcessed.any((List pair) => pair.contains(piece.position) && pair.contains(hit.position))) return;
+
+            pointPairAlreadyProcessed.add([piece.position, hit.position]);
+
+            var points = createPointsFromRange(piece.position, hit.position, inclusive: false);
+            results[player].add(points);
+
+            if (longestLine < points.length) longestLine = points.length;
+
+            // Mark the points as 'has intersections' if needed. Also calculate the longest line for a point.
+            points.forEach((p) {
+              if (pointHasIntersections.containsKey(p)) pointHasIntersections[p] = true;
+              else pointHasIntersections[p] = false;
+
+              // Mark the length of the longest line.
+              if (pointLongestLine[p] != null) pointLongestLine[p] = max(pointLongestLine[p], points.length);
+              else pointLongestLine[p] = points.length;
+
+              if (pointLineLengths.containsKey(p) == false) pointLineLengths[p] = [];
+              pointLineLengths[p].add(points.length);
+            });
+          }
+        });
+      });
+    });
+    // TODO: Areas need to be captued as well!
+    /*print('-----');
+    print(results);*/
+    // Starting from the longest line, filter out other intersecting lines that are shorter or equally long.
+    for (var length = longestLine; length > 1; length--) {
+      pointHasIntersections.forEach((point, has) {
+        if (has && pointLongestLine[point] == length) {
+          /*print('Point: $point');
+          print('Len: ${pointLongestLine[point]}');*/
+
+          // Figure out every line of every player that is concerned about this particular point.
+          Map<Player, List<List<Point>>> survivedLines = new LinkedHashMap();
+          Map<Player, List<List<Point>>> removedLines = new LinkedHashMap();
+          var survivedPlayers = []; // Which players had their lines survived?
+
+          results.forEach((player, lines) {
+            survivedLines[player] = [];
+            removedLines[player] = [];
+
+            lines.forEach((List<Point> line) {
+              // Only care about lines that intersect.
+              if (line.any((p) => p == point)) {
+                // Either add this line to 'removed' or 'survived' list, depending on its length.
+                if (line.length == length) {
+                  survivedLines[player].add(line);
+
+                  if (survivedPlayers.contains(player)) {
+                    // This player already had an intersecting line! Let's remove the intersecting point from this line.
+                    line.remove(point);
+                  } else {
+                    survivedPlayers.add(player);
+                  }
+                } else {
+                  removedLines[player].add(line);
+                }
+              }
+            });
+          });
+
+          /*print('Survived lines: $survivedLines');
+          print('Removed lines: $removedLines');
+          print('Survived plr length: ${survivedPlayers.length}');*/
+
+          // If multiple lines survived from multiple players, filter all out (neutralize). i.e. add to remove list.
+          if (survivedPlayers.length > 1) {
+            survivedLines.forEach((k, v) {
+              removedLines[k].addAll(v);
+            });
+          }
+
+          // Filter out the removed lines.
+          removedLines.forEach((player, lines) {
+            // Don't remove shorter lines if they are from the player who had the longest line.
+            if (survivedPlayers.length == 1 && survivedPlayers.first == player) {
+              // TODO: Remove the duplicate intersection points!
+
+              return;
+            }
+
+            lines.forEach((line) {
+              results[player].removeWhere((l) => line.every((p) => l.contains(p)));
+              line.forEach((p) {
+                pointLineLengths[p].remove(line.length);
+                if (pointLineLengths[p] != null && pointLineLengths[p].length > 0) pointLongestLine[p] = pointLineLengths[p].reduce(max);
+                else pointLongestLine[p] = 0;
+              });
+            });
+          });
+        }
+      });
+    }
+
+    // Flatten results.
+    var flattened = new LinkedHashMap();
+    results.forEach((player, lines) {
+      flattened[player] = lines.fold([], (p, c) => p..addAll(c));
+    });
+
+    return flattened;
   }
 
   /** Creates a [Point] [Set] as a range from the two given points. */
@@ -159,26 +303,5 @@ class BoardLogic {
     });
 
     return points;
-  }
-
-  List<Point> getAvailablePointsPerDirection(Point p, {direction: 'right'}) {
-    // How much to increase per step.
-    var xIncrease = direction.contains('right') ? 1 : (direction.contains('left') ? -1 : 0);
-    var yIncrease = direction.contains('bottom') ? 1 : (direction.contains('top') ? -1 : 0);
-    var cells = [];
-    for(var i = 0; i <= game.maxMovement; i++) {
-      var nextPoint = new Point(p.x + xIncrease * i, p.y + yIncrease * i);
-
-      // We hit the nether.
-      if (nextPoint.x > game.columns) break;
-      if (nextPoint.x < 0) break;
-      if (nextPoint.y > game.rows) break;
-      if (nextPoint.y < 0) break;
-
-      if (this.isCellEmpty(nextPoint)) {
-        cells.add(nextPoint);
-      }
-    }
-    return cells;
   }
 }

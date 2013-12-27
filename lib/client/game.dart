@@ -50,6 +50,7 @@ class Game {
   Map<Player, List<Point>> capturedPointsByPlayer = new LinkedHashMap(); // Captured areas per player. This determines the total score.
   Map<Player, List<Point>> availablePointsByPlayer = new LinkedHashMap(); // Areas where each player can place pieces at.
   Map<Player, Point> lastMoveByPlayer = new LinkedHashMap();
+  List<List<Entity>> board; // A 2d list of the game area. May contain nulls.
 
   bool isCurrentPositionAvailable = false;
   bool ended = false; // Has the game ended?
@@ -106,6 +107,7 @@ class Game {
 
   Point getRandomEmptyCell() {
     var p = new Point(random.nextInt(columns), random.nextInt(rows));
+    //var p = new Point(16 + random.nextInt(5), 5 + random.nextInt(5));
     if (!boardLogic.isCellEmpty(p)) return getRandomEmptyCell();
     return p;
   }
@@ -132,6 +134,7 @@ class Game {
     updateScores();
 
     if (currentPlayer.isComputer && ended == false) {
+      waitMs = 0;
       new Timer(new Duration(milliseconds: waitMs), () {
         var w = new Stopwatch()..start;
         ai.run();
@@ -168,8 +171,19 @@ class Game {
 
   /** Updates all kinds of caches. Needs to be called after every turn. */
   void updateCache() {
+    board = [];
+    for (var x = 0; x < columns; x++) {
+      board.add(new List.filled(rows, null));
+    }
+
+    entities.forEach((e) {
+      board[e.position.x][e.position.y] = e;
+    });
+
+    var captured = boardLogic.getCapturedPointsByPlayer();
+
     players.forEach((player) {
-      capturedPointsByPlayer[player] = boardLogic.getCapturedPoints(player: player);
+      capturedPointsByPlayer[player] = captured[player];
       availablePointsByPlayer[player] = boardLogic.getAvailablePoints(player: player);
     });
   }
